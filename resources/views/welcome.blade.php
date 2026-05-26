@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Hero Section (Original) -->
     <section class="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-12">
         <div class="flex-1 space-y-8">
             <span
@@ -51,60 +52,76 @@
         </div>
     </section>
 
-    <main id="explore" class="container mx-auto px-4 py-16">
-        <div class="mb-10">
-            <h2 class="text-2xl md:text-3xl font-extrabold mb-2 text-gray-900">Event Terdekat</h2>
-            <p class="text-gray-500">Jangan sampai ketinggalan acara seru minggu ini!</p>
+    <!-- Events Grid (Modul 6 Dynamic Data) -->
+    <main id="events" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-extrabold mb-2">Event Terdekat</h2>
+                <p class="text-slate-500 font-medium">Jangan sampai ketinggalan acara seru minggu ini!</p>
+            </div>
         </div>
 
+        <!-- Tab Filter Kategori Modul 6 -->
         <div class="flex flex-wrap gap-3 mb-12">
-            <a href="{{ url('/#explore') }}" 
-               class="px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 
-               {{ !request('category') ? 'bg-gray-800 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+            <!-- Tombol "Semua Kategori" -->
+            <a href="{{ url('/#events') }}" 
+               class="px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 
+               {{ !request('category') ? 'bg-indigo-600 text-white shadow-md' : 'border border-slate-200 text-slate-600 hover:border-indigo-600 hover:text-indigo-600' }}">
                Semua Kategori
             </a>
 
+            <!-- Looping Kategori dari Database -->
             @foreach($categories as $cat)
-            <a href="{{ url('/?category=' . $cat->slug . '#explore') }}" 
-               class="px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 
-               {{ request('category') == $cat->slug ? 'bg-blue-100 text-blue-700 border border-blue-200 shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+            <a href="{{ url('/?category=' . $cat->slug . '#events') }}" 
+               class="px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 
+               {{ request('category') == $cat->slug ? 'bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-sm' : 'border border-slate-200 text-slate-600 hover:border-indigo-600 hover:text-indigo-600' }}">
                {{ $cat->name }}
             </a>
             @endforeach
         </div>
 
+        <!-- Grid Daftar Event Dinamis -->
         @if($events->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($events as $event)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                <div class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
                     
-                    <div class="h-40 bg-gray-100 flex items-center justify-center relative overflow-hidden">
-                        <span class="absolute top-4 left-4 text-xs font-bold px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-800 rounded-lg shadow-sm uppercase tracking-wide z-10">
+                    <div class="relative overflow-hidden aspect-[3/4] bg-slate-100 shrink-0">
+                        <!-- PERUBAHAN DI SINI: Memanggil $event->poster_path dari database -->
+                        <img src="{{ $event->poster_path ?? asset('assets/concert.png') }}" alt="{{ $event->title }}"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
                             {{ $event->category->name ?? 'Umum' }}
-                        </span>
+                        </div>
                     </div>
                     
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-3 text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors" title="{{ $event->title }}">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition line-clamp-2" title="{{ $event->title }}">
                             {{ $event->title }}
                         </h3>
                         
-                        <div class="space-y-2 mb-6 text-sm text-gray-500 font-medium">
-                            <p class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                {{ \Carbon\Carbon::parse($event->date)->format('d M Y, H:i') }}
-                            </p>
-                            <p class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                {{ $event->location ?? '-' }}
-                            </p>
+                        <div class="flex flex-col gap-2 text-slate-500 text-sm mb-6 flex-grow">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>{{ \Carbon\Carbon::parse($event->date)->format('d M Y, H:i') }}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span class="line-clamp-1">{{ $event->location ?? '-' }}</span>
+                            </div>
                         </div>
                         
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                            <span class="text-lg font-extrabold text-gray-900">
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100 mt-auto">
+                            <span class="text-2xl font-black text-indigo-600">
                                 Rp {{ number_format($event->price, 0, ',', '.') }}
                             </span>
-                            <a href="{{ route('events.show', $event->id) }}" class="bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-800 px-4 py-2 rounded-lg text-sm font-bold transition-colors duration-200">
+                            <a href="{{ route('events.show', $event->id ?? 1) }}"
+                                class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">
                                 Detail
                             </a>
                         </div>
@@ -113,12 +130,31 @@
                 @endforeach
             </div>
         @else
-            <div class="text-center py-20 bg-gray-50 rounded-2xl border border-gray-200 border-dashed max-w-3xl mx-auto">
-                <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h3 class="text-xl font-bold text-gray-700 mb-2">Event Tidak Ditemukan</h3>
-                <p class="text-gray-500 mb-6">Belum ada event yang tersedia untuk kategori ini.</p>
-                <a href="{{ url('/') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition">Lihat Semua Event</a>
+            <!-- State Jika Event Kosong -->
+            <div class="text-center py-20 bg-slate-50 rounded-3xl border border-slate-200 border-dashed max-w-3xl mx-auto">
+                <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h3 class="text-xl font-bold text-slate-700 mb-2">Event Tidak Ditemukan</h3>
+                <p class="text-slate-500 mb-6">Belum ada event yang tersedia untuk kategori ini.</p>
+                <a href="{{ url('/') }}" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition">Lihat Semua Event</a>
             </div>
         @endif
     </main>
+
+    <!-- JAWABAN SOAL 4: Render Data Partner ke Layar Publik -->
+    <section class="max-w-7xl mx-auto px-6 py-16 mb-10 border-t border-slate-200">
+        <div class="text-center mb-10">
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Didukung Oleh Mitra Kami</h2>
+            <p class="text-slate-500">Platform AmikomEventHub dipercaya oleh berbagai perusahaan hebat.</p>
+        </div>
+        
+        <div class="flex flex-wrap justify-center gap-8 items-center opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+            @foreach($partners as $partner)
+                <div class="flex flex-col items-center gap-2 w-24 md:w-32 hover:scale-110 transition-transform">
+                    <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full shadow-md border-2 border-white">
+                    <span class="text-xs font-bold text-slate-600 text-center">{{ $partner->name }}</span>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Category; // Wajib import model Category
+use App\Models\Partner; // JAWABAN SOAL 4: Wajib import model Partner
 
 class HomeController extends Controller
 {
@@ -30,6 +31,10 @@ class HomeController extends Controller
         // 4. Eksekusi query dan kirim data hasilnya ke template Blade
         $events = $query->get();
 
-        return view('welcome', compact('events', 'categories'));
+        // 5. JAWABAN SOAL 4: Ambil semua data partner untuk ditampilkan di homepage
+        $partners = Partner::all();
+
+        // 6. Tambahkan 'partners' ke dalam compact agar bisa dibaca oleh file welcome.blade.php
+        return view('welcome', compact('events', 'categories', 'partners'));
     }
 }
