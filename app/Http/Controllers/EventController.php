@@ -8,12 +8,11 @@ use App\Models\Event;
 class EventController extends Controller
 {
     /**
-     * Menampilkan halaman detail event
+     * Menampilkan halaman detail event (Public)
      */
     public function show($id)
     {
-        // Mencari event berdasarkan ID beserta data kategorinya. 
-        // Jika tidak ketemu, otomatis akan menampilkan halaman 404 (Not Found).
+        // Mencari event berdasarkan ID beserta data kategorinya.
         $event = Event::with('category')->findOrFail($id);
         
         // Mengirimkan variabel $event ke file event-detail.blade.php
@@ -23,9 +22,8 @@ class EventController extends Controller
     /**
      * Menampilkan halaman checkout (sementara)
      */
-    public function checkout(Request $request)
+    public function checkout(Request $request, $id = null)
     {
-        // Logika checkout bisa dikembangkan nanti
         return view('checkout');
     }
 

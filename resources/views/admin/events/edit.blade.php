@@ -75,6 +75,13 @@
                     <input type="text" name="location" id="location" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" 
                            value="{{ $event->location }}" required>
                 </div>
+                
+                <!-- URL Poster (Link Gambar) -->
+                <div class="md:col-span-2">
+                    <label for="poster_path" class="block text-sm font-medium text-gray-700 mb-2">URL Poster (Link Gambar)</label>
+                    <input type="url" name="poster_path" id="poster_path" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" 
+                           value="{{ $event->poster_path }}" placeholder="https://..." required>
+                </div>
 
                 <!-- Deskripsi Pendek -->
                 <div class="md:col-span-2">
