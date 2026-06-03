@@ -25,27 +25,32 @@
                 </a>
             </div>
         </div>
-        <div class="flex-1 relative">
-            <div
-                class="absolute -top-10 -left-10 w-64 h-64 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
-            </div>
-            <div
-                class="absolute -bottom-10 -right-10 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
-            </div>
-            <img src="{{ asset('assets/concert.png') }}" alt="Concert"
-                class="rounded-[2rem] shadow-2xl relative z-10 w-full object-cover aspect-[4/5] object-center">
+        
+        <div class="flex-1 relative flex justify-center md:justify-end">
+            <!-- Membungkus poster dalam container agar ukurannya lebih kecil (max-w-md) -->
+            <div class="relative w-4/5 max-w-sm lg:max-w-md mt-10 md:mt-0">
+                <div
+                    class="absolute -top-10 -left-10 w-64 h-64 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+                </div>
+                <div
+                    class="absolute -bottom-10 -right-10 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+                </div>
+                
+                <img src="{{ asset('assets/concert.png') }}" alt="Concert"
+                    class="rounded-[2rem] shadow-2xl relative z-10 w-full object-cover aspect-[4/5] object-center">
 
-            <div class="absolute -bottom-6 -left-6 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl z-20 border border-white">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-500 font-bold uppercase">Terverifikasi</p>
-                        <p class="font-bold">Pembayaran Aman via Midtrans</p>
+                <div class="absolute -bottom-6 -left-4 md:-left-8 bg-white/90 backdrop-blur-md p-4 md:p-6 rounded-2xl shadow-xl z-20 border border-white">
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 shrink-0">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase">Terverifikasi</p>
+                            <p class="text-sm md:text-base font-bold text-slate-800">Pembayaran Aman via Midtrans</p>
+                        </div>
                     </div>
                 </div>
             </div>
