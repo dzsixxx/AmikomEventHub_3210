@@ -92,8 +92,22 @@
                 <div class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
                     
                     <div class="relative overflow-hidden aspect-[3/4] bg-slate-100 shrink-0">
-                        <!-- PERUBAHAN DI SINI: Memanggil $event->poster_path dari database -->
-                        <img src="{{ $event->poster_path ?? asset('assets/concert.png') }}" alt="{{ $event->title }}"
+                        @php
+                            // PERUBAHAN DI SINI: Logika pintar pengecekan URL vs Upload Local
+                            $posterUrl = asset('assets/concert.png'); // Default fallback
+                            
+                            if ($event->poster_path) {
+                                // Jika berawalan http (berarti dari seeder Unsplash/Placehold)
+                                if (str_starts_with($event->poster_path, 'http')) {
+                                    $posterUrl = $event->poster_path;
+                                } else {
+                                    // Jika tidak berawalan http (berarti file upload dari laptop ke storage)
+                                    $posterUrl = asset('storage/' . $event->poster_path);
+                                }
+                            }
+                        @endphp
+                        
+                        <img src="{{ $posterUrl }}" alt="{{ $event->title }}"
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                         <div class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
                             {{ $event->category->name ?? 'Umum' }}

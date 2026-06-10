@@ -9,7 +9,6 @@
         </a>
     </div>
 
-    <!-- Menampilkan Error Validasi (jika ada) -->
     @if ($errors->any())
         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 shadow-sm" role="alert">
             <ul class="list-disc pl-5">
@@ -21,20 +20,21 @@
     @endif
 
     <div class="bg-white shadow-md rounded-lg p-6">
-        <form action="{{ route('admin.events.store') }}" method="POST">
+        <!-- PENTING: Tambahkan enctype="multipart/form-data" agar form bisa kirim file -->
+        <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Judul Event -->
                 <div class="md:col-span-2">
-                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Judul Event</label>
-                    <input type="text" name="title" id="title" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('title') }}" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Judul Event</label>
+                    <input type="text" name="title" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('title') }}" required>
                 </div>
 
                 <!-- Kategori Event -->
                 <div>
-                    <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Kategori Event</label>
-                    <select name="category_id" id="category_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategori Event</label>
+                    <select name="category_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" required>
                         <option value="" disabled selected>-- Pilih Kategori --</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -46,38 +46,38 @@
 
                 <!-- Tanggal & Waktu -->
                 <div>
-                    <label for="date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal & Waktu</label>
-                    <input type="datetime-local" name="date" id="date" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('date') }}" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal & Waktu</label>
+                    <input type="datetime-local" name="date" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('date') }}" required>
                 </div>
 
                 <!-- Harga Tiket -->
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Harga Tiket (Rp)</label>
-                    <input type="number" name="price" id="price" min="0" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('price') }}" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Harga Tiket (Rp)</label>
+                    <input type="number" name="price" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('price') }}" required>
                 </div>
 
                 <!-- Kapasitas Stok -->
                 <div>
-                    <label for="stock" class="block text-sm font-medium text-gray-700 mb-2">Kapasitas Stok</label>
-                    <input type="number" name="stock" id="stock" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('stock') }}" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kapasitas Stok</label>
+                    <input type="number" name="stock" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('stock') }}" required>
                 </div>
 
                 <!-- Lokasi / Gedung -->
                 <div class="md:col-span-2">
-                    <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Lokasi / Gedung</label>
-                    <input type="text" name="location" id="location" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('location') }}" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi / Gedung</label>
+                    <input type="text" name="location" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('location') }}" required>
                 </div>
                 
-                <!-- URL Poster (Link Gambar) -->
+                <!-- UPLOAD POSTER (Diperbarui dari URL menjadi input FILE) -->
                 <div class="md:col-span-2">
-                    <label for="poster_path" class="block text-sm font-medium text-gray-700 mb-2">URL Poster (Link Gambar)</label>
-                    <input type="url" name="poster_path" id="poster_path" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" value="{{ old('poster_path') }}" placeholder="https://..." required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Poster Event (Opsional, Max 2MB)</label>
+                    <input type="file" name="poster" accept="image/*" class="w-full border-gray-300 rounded-md shadow-sm border p-2 bg-gray-50 cursor-pointer">
                 </div>
 
                 <!-- Deskripsi Pendek -->
                 <div class="md:col-span-2">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi Pendek</label>
-                    <textarea name="description" id="description" rows="4" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" required>{{ old('description') }}</textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi Pendek</label>
+                    <textarea name="description" rows="4" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border p-2" required>{{ old('description') }}</textarea>
                 </div>
             </div>
 
