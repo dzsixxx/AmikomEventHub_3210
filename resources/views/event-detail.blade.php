@@ -2,17 +2,24 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-6 py-10">
+    <!-- Alert Success setelah Checkout (Di-redirect ke home/detail) -->
+    @if(session('success'))
+    <div class="mb-8 p-4 bg-green-100 text-green-700 rounded-xl font-bold flex items-center gap-3 border border-green-200 shadow-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        {{ session('success') }}
+    </div>
+    @endif
+
     <div class="flex flex-col lg:flex-row gap-10">
-        
         <!-- Bagian Kiri: Poster Event -->
         <div class="w-full lg:w-1/3">
             <div class="sticky top-10">
                 @php
                     $posterUrl = 'https://placehold.co/600x800';
                     if ($event->poster_path) {
-                        if (filter_var($event->poster_path, FILTER_VALIDATE_URL)) {
+                        if (str_starts_with($event->poster_path, 'http')) {
                             $posterUrl = $event->poster_path;
-                        } elseif (Storage::disk('public')->exists($event->poster_path)) {
+                        } else {
                             $posterUrl = asset('storage/' . $event->poster_path);
                         }
                     }
@@ -60,7 +67,7 @@
             </div>
             
             <div class="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl mb-12 self-start font-medium inline-flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Hanya tersisa {{ $event->stock }} tiket lagi!
             </div>
             
@@ -70,7 +77,9 @@
                         <p class="text-indigo-200 font-bold uppercase tracking-wider text-sm mb-1">Harga Tiket</p>
                         <p class="text-4xl font-black">Rp {{ number_format($event->price, 0, ',', '.') }}</p>
                     </div>
-                    <a href="{{ route('checkout', $event->id) }}" 
+                    
+                    <!-- PENTING: Perubahan rute menjadi checkout.create -->
+                    <a href="{{ route('checkout.create', $event->id) }}" 
                        class="w-full md:w-auto px-10 py-4 bg-white text-indigo-600 font-extrabold rounded-2xl hover:bg-slate-50 hover:scale-105 transition-all duration-300 text-center text-lg shadow-lg">
                         Pesan Sekarang
                     </a>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\CheckoutController; // PENTING: Controller Baru
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -14,12 +15,13 @@ use App\Http\Controllers\Admin\CategoryController;
 // USER AREA ROUTES (Publik & Bebas Akses)
 // ==========================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-// PENTING: Perubahan URL sesuai modul 9.4.6 menjadi /events/{event}
 Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
-Route::get('/checkout/{id?}', [EventController::class, 'checkout'])->name('checkout');
-Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 
+// RUTE BARU CHECKOUT (Modul 10)
+Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
+
+Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 
 // ==========================================
 // ADMIN AREA ROUTES
