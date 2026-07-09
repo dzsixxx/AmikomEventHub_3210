@@ -11,13 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // MENDAFTARKAN ALIAS MIDDLEWARE (Jawaban Soal 8.5 Nomor 3)
+        // MENDAFTARKAN ALIAS MIDDLEWARE (Modul 8)
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
         
         // Memaksa redirect ke halaman login admin jika belum auth
         $middleware->redirectGuestsTo('/admin/login');
+
+        // PENTING (Modul 12): Mengecualikan route webhook Midtrans dari blokir CSRF
+        $middleware->validateCsrfTokens(except: [
+            '/midtrans/callback',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

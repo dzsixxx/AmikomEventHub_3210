@@ -83,6 +83,7 @@ class CheckoutController extends Controller
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
 
         try {
+            /** @var object $midtransStatus */
             $midtransStatus = \Midtrans\Transaction::status($order_id);
             if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
                 $transaction->update(['status' => 'Success']);
