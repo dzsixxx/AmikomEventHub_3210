@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\CheckoutController; // PENTING: Controller Baru
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -17,9 +17,11 @@ use App\Http\Controllers\Admin\CategoryController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
 
-// RUTE BARU CHECKOUT (Modul 10)
+// RUTE CHECKOUT & PEMBAYARAN (Modul 10 & 11)
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 
