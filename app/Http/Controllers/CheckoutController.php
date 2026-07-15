@@ -40,7 +40,6 @@ class CheckoutController extends Controller
             'status' => 'Pending',
         ]);
 
-        // Mengambil kunci yang benar dari file .env melalui config
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
         \Midtrans\Config::$isSanitized = true;
@@ -74,21 +73,54 @@ class CheckoutController extends Controller
         return view('checkout.payment', compact('transaction', 'categories'));
     }
 
+    /**
+     * MODUL 13 UPDATE: Fallback Check. 
+     * Menangani antisipasi jika Webhook dari server lokal mati.
+     */
     public function success($order_id)
     {
         $categories = \App\Models\Category::all();
-        $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
+        $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
 
+        // Konfigurasi Midtrans untuk mengecek status transaksi langsung ke API (Bypass)
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
 
         try {
-            /** @var object $midtransStatus */
-            $midtransStatus = \Midtrans\Transaction::status($order_id);
-            if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
-                $transaction->update(['status' => 'Success']);
+            // Mengecek status pesanan secara mandiri ke API Midtrans
+            $status = \Midtrans\Transaction::status($order_id);
+
+            if ($status) {
+                // Mengambil nilai status transaksi
+                $trx_status = is_array($status) ? ($status['transaction_status'] ?? '') : ($status->transaction_status ?? '');
+
+                // Jika API Midtrans mengonfirmasi bahwa transaksi telah berhasil
+                if (in_array($trx_status, ['settlement', 'capture'])) {
+                    
+                    // Hanya lakukan Eksekusi Logika jika status di database lokal MASIH 'pending'
+                    // (Ini berarti Webhook telat/gagal masuk. Kita yang proses manual di sini)
+                    if (strtolower($transaction->status) === 'pending') {
+                        
+                        $transaction->update(['status' => 'Success']);
+
+                        // Potong Stok
+                        if ($transaction->event && $transaction->event->stock > 0) {
+                            $transaction->event->stock = $transaction->event->stock - 1;
+                            $transaction->event->save();
+                            
+                            // Kirim Email secara Manual
+                            try {
+                                \Illuminate\Support\Facades\Mail::to($transaction->customer_email)
+                                    ->send(new \App\Mail\EventTicketMail($transaction));
+                            } catch (Exception $e) {
+                                \Log::error('Gagal mengirim email E-Ticket secara manual (Bypass): ' . $e->getMessage());
+                            }
+                        }
+                    }
+                }
             }
         } catch (Exception $e) {
+            // Jika error dari API Midtrans (transaksi tidak valid), kembalikan ke beranda
             return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan atau gagal diproses oleh sistem pembayaran.');
         }
 
